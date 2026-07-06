@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DarkImagem — Irvison Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fira+Code:wght@400;500&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080c14;--s1:#0d1220;--s2:#121929;--s3:#1a2235;
+  --border:#1e2d47;--border2:#253452;
+  --accent:#00d4ff;--accent2:#ff6b00;--accent3:#00ff9d;
+  --text:#dde8f5;--muted:#556680;--muted2:#3d5070;
+  --r:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden}
+
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 60% 40% at 10% 0%,rgba(0,212,255,.05) 0%,transparent 70%),
+  radial-gradient(ellipse 50% 30% at 90% 100%,rgba(255,107,0,.04) 0%,transparent 70%);}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(0,212,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.02) 1px,transparent 1px);
+  background-size:40px 40px;}
+
+.wrap{max-width:1060px;margin:0 auto;padding:0 20px;position:relative;z-index:1}
+
+/* HEADER */
+header{padding:32px 0 24px;border-bottom:1px solid var(--border)}
+.logo{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;letter-spacing:-1px;line-height:1.2}
+.logo em{color:var(--accent);font-style:normal}
+.tagline{font-size:13px;color:var(--muted);margin-top:5px}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:1fr 260px;gap:20px;align-items:start;margin-top:28px}
+.main{min-width:0}
+.sidebar{position:sticky;top:20px;display:flex;flex-direction:column;gap:12px}
+
+/* CARDS */
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:14px;transition:border-color .2s}
+.card:hover{border-color:var(--border2)}
+.card-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.card-title::before{content:'';width:3px;height:14px;background:var(--accent);border-radius:2px;flex-shrink:0}
+
+/* INPUTS */
+input, textarea, select{
+  width:100%;background:var(--s2);border:1px solid var(--border);border-radius:8px;
+  padding:11px 14px;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;
+  outline:none;transition:border-color .2s;
+}
+input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,212,255,.07)}
+textarea{resize:vertical;min-height:200px;line-height:1.7;font-family:'Fira Code',monospace;font-size:13px}
+select{appearance:none;cursor:pointer;padding-right:32px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%23556680' d='M5 6L0 0h10z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;}
+
+label.lbl{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/* FILE UPLOAD */
+.file-label{display:flex;align-items:center;justify-content:center;gap:8px;
+  background:var(--s2);border:1px dashed var(--border2);border-radius:8px;
+  padding:11px 14px;color:var(--muted);cursor:pointer;transition:all .2s;font-size:13px;margin-top:8px}
+.file-label:hover{border-color:var(--accent);color:var(--accent)}
+.file-label input{display:none}
+
+/* INFO BOX */
+.info-box{background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.2);border-radius:8px;padding:11px 14px;font-size:11px;color:var(--accent);line-height:1.7}
+.info-box strong{display:block;font-size:12px;margin-bottom:4px;font-family:'Syne',sans-serif;letter-spacing:1px}
+
+/* STATS */
+.stat-card{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:14px 16px}
+.stat-val{font-family:'Fira Code',monospace;font-size:26px;font-weight:600;color:var(--accent);line-height:1}
+.stat-val.warn{color:var(--accent2)}
+.stat-val.ok{color:var(--accent3)}
+.stat-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:4px}
+.stat-sub{font-size:10px;color:var(--muted2);margin-top:3px;font-family:'Fira Code',monospace}
+
+.warn-box{background:rgba(255,107,0,.07);border:1px solid rgba(255,107,0,.25);border-radius:8px;padding:11px 12px;font-size:11px;color:var(--accent2);line-height:1.6;display:none}
+.warn-box.on{display:block}
+
+/* BUTTONS */
+.btn-main{width:100%;background:linear-gradient(135deg,var(--accent),#0099cc);color:#000;
+  border:none;border-radius:var(--r);padding:15px;font-family:'Syne',sans-serif;
+  font-size:17px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .25s;}
+.btn-main:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,212,255,.22);filter:brightness(1.08)}
+.btn-main:disabled{opacity:.35;cursor:not-allowed;}
+
+.btn-exp{flex:1;background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:12px;color:var(--text);font-family:'Syne',sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;cursor:pointer;transition:all .2s}
+.btn-exp:hover{border-color:var(--accent);color:var(--accent)}
+
+/* PROGRESS */
+#prog-wrap{display:none;margin-bottom:14px}
+.prog-bar-bg{background:var(--s3);border-radius:100px;height:5px;overflow:hidden;margin-bottom:8px}
+.prog-bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:100px;transition:width .3s ease;width:0}
+.prog-info{font-size:11px;font-family:'Fira Code',monospace;color:var(--muted)}
+.spin{display:inline-block;width:11px;height:11px;border:2px solid rgba(0,212,255,.2);border-top-color:var(--accent);border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle;margin-right:5px}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* CHARACTER PROFILES */
+#profiles-wrap{display:none;margin-bottom:14px}
+.char-card{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:13px 16px;margin-bottom:8px}
+.char-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--accent2);margin-bottom:3px}
+.char-desc{font-size:11px;color:var(--muted);line-height:1.6;font-family:'Fira Code',monospace}
+
+/* RESULTS */
+#results-wrap{display:none}
+.prompt-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden;animation:fadeUp .3s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.prompt-head{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:var(--s2);border-bottom:1px solid var(--border)}
+.prompt-num{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--accent);letter-spacing:1px}
+.copy-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:4px 10px;color:var(--muted);font-size:10px;cursor:pointer;transition:all .2s;font-family:'Outfit',sans-serif}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+.copy-btn.ok{border-color:var(--accent3);color:var(--accent3)}
+.prompt-wc{font-size:10px;font-family:'Fira Code',monospace;color:var(--muted)}
+.prompt-body{padding:16px;font-family:'Fira Code',monospace;font-size:12.5px;line-height:1.8;color:#a8bcd4}
+
+.export-bar{display:flex;gap:10px;padding-top:18px;border-top:1px solid var(--border);margin-top:6px}
+.notif{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--s3);border:1px solid var(--accent3);color:var(--accent3);padding:10px 20px;border-radius:8px;font-size:13px;z-index:100;display:none;}
+
+.lang-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(0,255,157,.08);border:1px solid rgba(0,255,157,.2);border-radius:4px;padding:2px 7px;font-size:10px;font-family:'Fira Code',monospace;color:var(--accent3);margin-left:8px;vertical-align:middle}
+
+@media(max-width:680px){
+  .layout{grid-template-columns:1fr}.sidebar{position:static}.grid3{grid-template-columns:1fr}.logo{font-size:24px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <div class="logo">Dark<em>Imagem</em></div>
+      <div class="tagline">Roteiro → Perfis de Personagens → Prompts consistentes via <strong>Gemini 2.5 Flash</strong></div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <div class="main">
+
+      <div class="card">
+        <div class="card-title">Configurações de Geração</div>
+        <div class="grid3">
+          <div>
+            <label class="lbl">Palavras por Cena</label>
+            <select id="wordsPerScene" onchange="updateStats()">
+              <option value="35">35 palavras (mínimo)</option>
+              <option value="50">50 palavras</option>
+              <option value="65">65 palavras</option>
+              <option value="80">80 palavras</option>
+              <option value="100" selected>100 palavras (máximo)</option>
+            </select>
+          </div>
+          <div>
+            <label class="lbl">Estilo Visual</label>
+            <select id="sceneStyle">
+              <option value="foto-realista">📷 Fotorrealista</option>
+              <option value="cartoon-3d">🎨 Cartoon 3D (Pixar)</option>
+              <option value="palito">✏️ Palito (Stick Figure)</option>
+              <option value="cinematografica" selected>🎬 Cinematográfico</option>
+              <option value="anime">🌸 Anime / Ghibli</option>
+              <option value="aquarela">🖌️ Aquarela</option>
+              <option value="cyberpunk">🌆 Cyberpunk Neon</option>
+              <option value="hq">💥 HQ / Comics</option>
+              <option value="3d-render">🧊 Renderização 3D</option>
+              <option value="noir">🎭 Noir (P&B)</option>
+              <option value="pixel-art">👾 Pixel Art</option>
+              <option value="dark-fantasy">🐉 Dark Fantasy</option>
+              <option value="ink-watercolor">🖊️ 2D Ink & Hatching - Watercolor</option>
+              <option value="steampunk">⚙️ Steampunk Vitoriano</option>
+              <option value="vaporwave">🌊 Vaporwave / Retrowave</option>
+              <option value="claymation">🧸 Claymation (Argila)</option>
+              <option value="impressionismo">🌸 Impressionismo (Monet)</option>
+              <option value="concept-art">🎮 Concept Art (Game/Film)</option>
+              <option value="low-poly">🔷 Low Poly 3D</option>
+              <option value="baroque">🕯️ Barroco (Rembrandt)</option>
+              <option value="ukiyo-e">🗻 Ukiyo-e (Gravura Japonesa)</option>
+              <option value="3d-cinematic-anim">🎞️ 3D Cinematic Animation</option>
+            </select>
+          </div>
+          <div>
+            <label class="lbl">Idioma do Roteiro</label>
+            <select id="langSelect">
+              <option value="pt-BR">🇧🇷 Português (BR)</option>
+              <option value="en-US">🇺🇸 English (US)</option>
+              <option value="es-MX">🇲🇽 Español (MX)</option>
+              <option value="fr-FR">🇫🇷 Français (FR)</option>
+              <option value="de-DE">🇩🇪 Deutsch</option>
+              <option value="it-IT">🇮🇹 Italiano</option>
+              <option value="ja-JP">🇯🇵 日本語</option>
+              <option value="es-ES">🇪🇸 Español (ES)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Info box sobre prompts em inglês -->
+        <div class="info-box" style="margin-top:14px">
+          <strong>🛡 Compatibilidade com IA de Imagem</strong>
+          Os prompts gerados são <strong>sempre em inglês</strong>, independente do idioma do roteiro. Isso garante máxima compatibilidade com APIs de geração de imagem (Imagen, DALL-E, Midjourney) e evita recusas por conteúdo. O roteiro pode estar em qualquer idioma — a IA traduz e adapta automaticamente.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Roteiro</div>
+        <textarea id="roteiro" oninput="updateStats()" placeholder="Cole seu roteiro aqui..."></textarea>
+        <label class="file-label">
+          <input type="file" id="fileInput" accept=".txt" onchange="handleFile(this)">
+          📁 Carregar .txt
+        </label>
+      </div>
+
+      <button class="btn-main" id="btnStart" onclick="startPipeline()">⚡ PROCESSAR COM GEMINI</button>
+      <div class="err-box" id="errBox" style="display:none; color: #ff4f6b; margin-top: 10px; font-size: 14px; text-align: center;"></div>
+
+      <div id="prog-wrap" class="card" style="margin-top:14px">
+        <div class="card-title" id="progTitle"><span class="spin"></span>Processando...</div>
+        <div class="prog-bar-bg"><div class="prog-bar" id="progBar"></div></div>
+        <div class="prog-info" id="progInfo">Iniciando...</div>
+      </div>
+
+      <!-- Perfis Visuais dos Personagens -->
+      <div id="profiles-wrap">
+        <div class="card">
+          <div class="card-title">Perfis Visuais dos Personagens <span class="lang-badge">EN</span></div>
+          <div id="charList"></div>
+          <p style="font-size:10px;color:var(--muted);margin-top:8px;font-family:'Fira Code',monospace">▲ Perfis em inglês — injetados em cada prompt para manter consistência visual entre cenas</p>
+        </div>
+      </div>
+
+      <div id="results-wrap">
+        <div class="card">
+          <div class="card-title">Prompts Gerados <span class="lang-badge">EN · Imagen-safe</span></div>
+          <div id="promptsBox"></div>
+          <div class="export-bar">
+            <button class="btn-exp" onclick="copyAll()">📋 Copiar Todos</button>
+            <button class="btn-exp" onclick="downloadTxt()">💾 Baixar .TXT</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="sidebar">
+      <div class="stat-card">
+        <div class="stat-val" id="statWords">0</div>
+        <div class="stat-lbl">Palavras</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val ok" id="statScenes">0</div>
+        <div class="stat-lbl">Cenas a Gerar</div>
+        <div class="stat-sub" id="statFormula">— ÷ — p/cena</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="statTime">~0s</div>
+        <div class="stat-lbl">Tempo Estimado</div>
+        <div class="stat-sub">~3s por cena</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="statDone">0</div>
+        <div class="stat-lbl">Prompts Gerados</div>
+      </div>
+      <div class="warn-box" id="warnBox">
+        ⚠️ Muitas cenas detectadas. A geração pode demorar um pouco.
+      </div>
+    </div>
+
+  </div>
+  <div style="height:60px"></div>
+</div>
+
+<div id="notif" class="notif"></div>
+
+<script>
+// Configurações do Ambiente
+const apiKey = "";
+const modelName = "gemini-2.5-flash-preview-09-2025";
+
+let allPrompts = [];
+let charProfiles = {};
+let isRunning = false;
+
+const STYLES = {
+  'foto-realista':    'photorealistic, ultra-detailed, 8K, natural cinematic lighting, sharp focus, professional photography',
+  'cartoon-3d':      'Pixar-style 3D cartoon, vibrant colors, smooth surfaces, expressive characters, warm lighting',
+  'palito':          'minimalist stick figure drawing, simple black ink lines on white background, clean and clear',
+  'cinematografica': 'cinematic 35mm film, anamorphic lens, dramatic lighting, shallow depth of field, color grading, movie still',
+  'anime':           'Studio Ghibli anime style, hand-drawn, soft watercolor backgrounds, expressive characters, detailed scenery',
+  'aquarela':        'watercolor painting, soft loose brush strokes, pastel tones, translucent colors, paper texture',
+  'cyberpunk':       'neon cyberpunk, rain-soaked streets, holographic lights, futuristic city, high contrast neon glow',
+  'hq':              'comic book style, bold ink outlines, halftone dots, vibrant flat colors, dynamic composition',
+  '3d-render':       'high quality 3D render, realistic textures, dramatic studio lighting, octane render, detailed environment',
+  'noir':            'black and white noir film, high contrast, dramatic shadows, chiaroscuro lighting, moody atmosphere',
+  'pixel-art':       'retro pixel art, 16-bit style, limited color palette, crisp pixels, retro game aesthetic',
+  'dark-fantasy':    'dark fantasy illustration, epic painterly style, dramatic shadows, atmospheric depth, oil painting look',
+  'ink-watercolor':  '2D ink and hatching illustration, precise black ink outlines, dense crosshatching shading, delicate watercolor wash overlay, loose expressive brushstrokes, soft muted tones bleeding into paper texture, editorial illustration style, detailed linework, hand-drawn aesthetic',
+  'steampunk':       'Victorian steampunk aesthetic, brass gears and pipes, sepia and copper tones, steam-powered machinery, Victorian fashion, dirigibles in the sky, ornate mechanical details, warm amber lighting',
+  'vaporwave':       'vaporwave retrowave aesthetic, neon pink and purple palette, 80s retro-futurism, glitch art effects, palm trees silhouettes, grid perspective, synthwave sunset, dreamy lo-fi atmosphere',
+  'claymation':      'clay animation style, tactile clay textures, stop-motion aesthetic, chunky rounded shapes, vibrant saturated colors, handmade feel, visible fingerprints on clay, warm studio lighting',
+  'impressionismo':  'impressionist oil painting, loose visible brushstrokes, Monet style, soft diffused light, dappled colors, plein air atmosphere, painterly texture, hazy romantic mood',
+  'concept-art':     'professional concept art, painterly digital illustration, cinematic wide composition, detailed environment design, matte painting style, atmospheric perspective, AAA video game or film production quality',
+  'low-poly':        'low polygon 3D art, geometric faceted surfaces, triangulated mesh aesthetic, minimal flat color palette, clean angular shapes, stylized abstract landscape',
+  'baroque':         'Baroque oil painting, dramatic chiaroscuro, Rembrandt lighting, deep rich colors, classical composition, ornate details, strong contrast between light and shadow, old master painting technique',
+  'ukiyo-e':         'Japanese woodblock print ukiyo-e style, flat bold colors, precise geometric outlines, Hokusai or Hiroshige aesthetic, traditional Japanese patterns, negative space, flowing lines, limited color palette',
+  '3d-cinematic-anim': '3D cinematic animation, DreamWorks quality, photorealistic humanoid characters with natural skin tones and detailed facial features, expressive emotions and dynamic body language, contemporary urban and domestic settings, warm golden hour lighting, subtle shadows, hyper-detailed textures, cinematic camera angles, shallow depth of field, emotionally resonant composition, fashionable modern clothing, family and community-focused scenes'
+};
+
+const LANG_NAMES = {
+  'pt-BR': 'Brazilian Portuguese',
+  'en-US': 'American English',
+  'es-MX': 'Mexican Spanish',
+  'fr-FR': 'French',
+  'de-DE': 'German',
+  'it-IT': 'Italian',
+  'ja-JP': 'Japanese',
+  'es-ES': 'Spanish'
+};
+
+// Função para Chamada da API com Retentativa (Backoff Exponencial)
+// jsonMode força saída JSON válida (usado na identificação de personagens)
+async function callGemini(systemPrompt, userPrompt, jsonMode = false, retryCount = 0) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+  const payload = {
+    contents: [{ parts: [{ text: userPrompt }] }],
+    systemInstruction: { parts: [{ text: systemPrompt }] }
+  };
+  if (jsonMode) payload.generationConfig = { responseMimeType: "application/json" };
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+       if (response.status === 429 && retryCount < 5) {
+         await sleep(Math.pow(2, retryCount) * 1000);
+         return callGemini(systemPrompt, userPrompt, jsonMode, retryCount + 1);
+       }
+       throw new Error(`Erro na API (${response.status})`);
+    }
+
+    const data = await response.json();
+    return (data.candidates?.[0]?.content?.parts?.[0]?.text || "").trim();
+  } catch (error) {
+    if (retryCount < 5) {
+        await sleep(Math.pow(2, retryCount) * 1000);
+        return callGemini(systemPrompt, userPrompt, jsonMode, retryCount + 1);
+    }
+    throw error;
+  }
+}
+
+// Extrai JSON de forma robusta (mesmo se vier com markdown ou texto extra)
+function parseJSON(raw){
+  let s = raw.replace(/```json|```/g, '').trim();
+  const first = s.indexOf('{');
+  const last = s.lastIndexOf('}');
+  if (first !== -1 && last !== -1) s = s.slice(first, last + 1);
+  return JSON.parse(s);
+}
+
+// Detecção de português (rede de segurança para garantir inglês)
+function isPortuguese(text){
+  const ptWords = /\b(uma?|para|com|por|que|não|está|seu|sua|ele|ela|nos|nas|dos|das|ao|da|do|em|se|os|as|mais|esse|essa|isso|aqui|como|mas|também|quando|onde|sobre|entre|depois|antes|ainda|já|bem|muito|então|sempre|nunca|cada|todo|toda|outro|outra|olha|vejo|sobe|desce|chora|sorri|corre|entra|sai|fala|olhos|rosto|mãos|voz|luz|sombra)\b/gi;
+  const matches = text.match(ptWords) || [];
+  return matches.length >= 3;
+}
+
+// Se o prompt saiu em português por engano, re-traduz para inglês
+async function ensureEnglish(prompt){
+  if(!isPortuguese(prompt)) return prompt;
+  try {
+    const translated = await callGemini(
+      'You are a translator. Translate the following visual image prompt to English. Keep the same style, details and structure. Output ONLY the translated prompt, no quotes, no explanation.',
+      prompt
+    );
+    return translated.replace(/^["']|["']$/g, '').trim() || prompt;
+  } catch { return prompt; }
+}
+
+function updateStats(){
+  const text = document.getElementById('roteiro').value.trim();
+  const wps = parseInt(document.getElementById('wordsPerScene').value) || 100;
+  const words = text ? text.split(/\s+/).filter(w=>w).length : 0;
+  const scenes = words > 0 ? Math.ceil(words / wps) : 0;
+  const secs = scenes * 3;
+  document.getElementById('statWords').textContent = words.toLocaleString('pt-BR');
+  document.getElementById('statScenes').textContent = scenes;
+  document.getElementById('statFormula').textContent = `${words.toLocaleString('pt-BR')} ÷ ${wps} p/cena`;
+  const timeEl = document.getElementById('statTime');
+  if(secs < 60) timeEl.textContent = `~${secs}s`;
+  else { const m=Math.floor(secs/60), s=secs%60; timeEl.textContent = `~${m}m${s>0?' '+s+'s':''}`; }
+  document.getElementById('statScenes').className = 'stat-val' + (scenes > 50 ? ' warn' : scenes > 0 ? ' ok' : '');
+  document.getElementById('warnBox').classList.toggle('on', scenes > 20);
+}
+
+function handleFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    document.getElementById('roteiro').value = e.target.result;
+    updateStats();
+  };
+  reader.readAsText(file);
+}
+
+async function startPipeline(){
+  const roteiro = document.getElementById('roteiro').value.trim();
+  if(roteiro.length < 10) {
+    showErr("Por favor, insira um roteiro mais longo.");
+    return;
+  }
+  if(isRunning) return;
+
+  isRunning = true;
+  allPrompts = [];
+  charProfiles = {};
+  document.getElementById('btnStart').disabled = true;
+  document.getElementById('prog-wrap').style.display = 'block';
+  document.getElementById('profiles-wrap').style.display = 'none';
+  document.getElementById('results-wrap').style.display = 'none';
+  document.getElementById('promptsBox').innerHTML = '';
+  document.getElementById('charList').innerHTML = '';
+  document.getElementById('statDone').textContent = "0";
+
+  try {
+    const wps = parseInt(document.getElementById('wordsPerScene').value);
+    const styleDesc = STYLES[document.getElementById('sceneStyle').value] || document.getElementById('sceneStyle').value;
+    const langCode = document.getElementById('langSelect').value;
+    const langName = LANG_NAMES[langCode] || 'Portuguese';
+
+    // ─── FASE 1: Identificação de Personagens ───
+    setProgress(5, 'Fase 1/3 — Identificando personagens...');
+    let characters = [];
+    try {
+      const charSystem = `You are a screenplay analyst expert in visual characterization for storyboard and AI image generation.
+The screenplay may be written in ${langName}. Analyze it and extract ALL mentioned characters with their COMPLETE physical descriptions.
+CRITICAL: Write ALL character descriptions in ENGLISH regardless of the screenplay language.
+Return ONLY valid JSON, no markdown:
+{"personagens":[{"nome":"CHARACTER NAME","descricao_visual":"detailed physical description in English"}]}`;
+      const charRaw = await callGemini(charSystem, `Screenplay (in ${langName}):\n${roteiro}`, true);
+      characters = parseJSON(charRaw).personagens || [];
+      characters.forEach(c => { charProfiles[c.nome.toUpperCase()] = c.descricao_visual; });
+    } catch(e) {
+      characters = []; // Se falhar, segue sem perfis (não quebra a geração)
+    }
+
+    // Exibe os perfis encontrados
+    document.getElementById('profiles-wrap').style.display = 'block';
+    document.getElementById('charList').innerHTML = characters.length > 0
+      ? characters.map(c => `<div class="char-card"><div class="char-name">${c.nome}</div><div class="char-desc">${c.descricao_visual}</div></div>`).join('')
+      : `<p style="font-size:12px;color:var(--muted)">Nenhum personagem detectado — os prompts serão gerados normalmente.</p>`;
+
+    const profilesStr = characters.length > 0
+      ? `\n\nCHARACTER VISUAL PROFILES (keep these EXACT traits consistent in every scene):\n` + characters.map(c => `- ${c.nome}: ${c.descricao_visual}`).join('\n')
+      : '';
+
+    // ─── FASE 2: Divisão em Cenas ───
+    setProgress(20, 'Fase 2/3 — Dividindo o roteiro em cenas...');
+    const words = roteiro.split(/\s+/).filter(w=>w.length>0);
+    const scenes = [];
+    for(let i=0; i<words.length; i+=wps) {
+      scenes.push(words.slice(i, i+wps).join(' '));
+    }
+    await sleep(300);
+
+    // ─── FASE 3: Geração dos Prompts ───
+    document.getElementById('results-wrap').style.display = 'block';
+
+    const systemPrompt = `You are an expert at creating detailed visual prompts for AI image generation (Google Imagen, DALL-E, Midjourney, Stable Diffusion).
+The screenplay is written in ${langName}. Visual style: ${styleDesc}.${profilesStr}
+
+CRITICAL RULES:
+- ALWAYS write prompts in ENGLISH — MANDATORY
+- Return ONLY the pure visual prompt — no numbering, no title, no explanation, no markdown
+- Write as a single flowing paragraph with commas and periods
+- Include: visual style, characters (with exact physical traits from the profiles above), setting, lighting, composition, atmosphere
+- DO NOT wrap in quotes — output raw text only
+- DO NOT use double quotes inside the prompt
+
+EXAMPLE:
+photorealistic, cinematic 35mm film, warm dramatic lighting. A woman in her 40s with short dark curly hair, wearing a blue uniform, walks down a corridor. Medium shot, muted tones.`;
+
+    for(let i=0; i<scenes.length; i++){
+      const cNum = i+1;
+      const pct = 28 + Math.round(((i+1)/scenes.length)*70);
+      setProgress(pct, `Fase 3/3 — Gerando Cena ${cNum} de ${scenes.length}...`);
+
+      try {
+        const rawPrompt = await callGemini(systemPrompt, `Scene ${cNum} (${langName}):\n\n${scenes[i]}`);
+        const prompt = await ensureEnglish(rawPrompt);
+        allPrompts.push({ cena: cNum, prompt });
+        renderPrompt(cNum, prompt);
+        document.getElementById('statDone').textContent = allPrompts.length;
+      } catch(e) {
+        showErr('Erro na cena '+cNum+': '+e.message);
+      }
+
+      // Pausa maior a cada 5 cenas para respeitar limites de taxa
+      if((i+1)%5===0 && i+1<scenes.length){ setProgress(pct, '⏸ Pausa breve para estabilidade...'); await sleep(2000); }
+      else await sleep(500);
+    }
+
+    setProgress(100, '✅ Concluído com sucesso!');
+  } catch(e) {
+    showErr('Ocorreu um erro: '+e.message);
+  } finally {
+    isRunning = false;
+    document.getElementById('btnStart').disabled = false;
+  }
+}
+
+function renderPrompt(num, text){
+  // Limpeza básica de aspas residuais da AI
+  let cleanedText = text.trim();
+  if((cleanedText.startsWith('"') && cleanedText.endsWith('"')) || (cleanedText.startsWith("'") && cleanedText.endsWith("'"))) {
+    cleanedText = cleanedText.slice(1, -1).trim();
+  }
+
+  const box = document.getElementById('promptsBox');
+  const wc = cleanedText.split(/\s+/).filter(w=>w).length;
+  const d = document.createElement('div');
+  d.className = 'prompt-card';
+
+  // Escapa caracteres para o botão de cópia inline
+  const escapedText = cleanedText.replace(/`/g,'\\`').replace(/\$/g,'\\$').replace(/'/g,"\\'");
+
+  d.innerHTML = `
+    <div class="prompt-head">
+      <span class="prompt-num">CENA ${num}</span>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="prompt-wc">${wc} palavras</span>
+        <button class="copy-btn" onclick="copyOne(this, \`${escapedText}\`)">📋 Copiar</button>
+      </div>
+    </div>
+    <div class="prompt-body">${cleanedText}</div>
+  `;
+
+  box.appendChild(d);
+  d.scrollIntoView({behavior:'smooth', block:'end'});
+}
+
+function copyOne(btn, text){
+  const textArea = document.createElement("textarea");
+  textArea.value = text;
+  document.body.appendChild(textArea);
+  textArea.select();
+  try {
+    document.execCommand('copy');
+    btn.textContent='✅ Copiado';
+    btn.classList.add('ok');
+    setTimeout(()=>{
+      btn.textContent='📋 Copiar';
+      btn.classList.remove('ok');
+    }, 2000);
+  } catch (err) {
+    console.error('Erro ao copiar', err);
+  }
+  document.body.removeChild(textArea);
+}
+
+function showErr(m){
+  const e = document.getElementById('errBox');
+  e.textContent = m;
+  e.style.display = 'block';
+  setTimeout(() => e.style.display = 'none', 10000);
+}
+
+function setProgress(pct, info){
+  document.getElementById('progBar').style.width = pct + '%';
+  document.getElementById('progInfo').textContent = info;
+}
+
+function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+function notify(msg) {
+    const n = document.getElementById('notif');
+    n.textContent = msg;
+    n.style.display = 'block';
+    setTimeout(() => n.style.display = 'none', 3000);
+}
+
+function copyAll(){
+  const boxes = document.querySelectorAll('.prompt-body');
+  if(!boxes.length) return;
+  const txt = Array.from(boxes).map((b,i) => `SCENE ${i+1}:\n${b.textContent}`).join('\n\n---\n\n');
+
+  const textArea = document.createElement("textarea");
+  textArea.value = txt;
+  document.body.appendChild(textArea);
+  textArea.select();
+  document.execCommand('copy');
+  document.body.removeChild(textArea);
+
+  notify('✅ Todos os prompts foram copiados!');
+}
+
+function downloadTxt(){
+  const boxes = document.querySelectorAll('.prompt-body');
+  if(!boxes.length) return;
+  const content = Array.from(boxes).map(b => b.textContent.replace(/\r?\n/g,' ').trim()).join('\n\n');
+  const blob = new Blob([content], {type: 'text/plain;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'darkimagem_prompts.txt';
+  a.click();
+}
+
+// Inicializa estatísticas caso haja texto residual
+window.onload = updateStats;
+</script>
+</body>
+</html>
